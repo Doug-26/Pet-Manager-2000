@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   template: `
     <header class="bg-white/80 shadow-sm backdrop-blur-sm">
       <div class="mx-auto flex max-w-7xl items-center gap-3 px-6 py-4">
-        <span class="text-3xl" role="img" aria-label="Paw print">🐾</span>
+        <span class="text-3xl" role="img" aria-label="Paw print" style="filter: sepia(1) saturate(3) hue-rotate(340deg) brightness(0.75)">🐾</span>
         <div>
           <h1 class="text-xl font-bold leading-tight text-slate-800">Pet Manager 2000</h1>
           <p class="text-xs text-slate-500">Pet store queue management</p>

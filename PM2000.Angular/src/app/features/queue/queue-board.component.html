@@ -49,6 +49,18 @@
             </p>
           }
         </div>
+        <div class="w-full sm:w-36">
+          <label for="species-select" class="sr-only">Pet species</label>
+          <select
+            id="species-select"
+            [formControl]="speciesControl"
+            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 transition-all focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
+          >
+            @for (opt of speciesOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.icon }} {{ opt.label }}</option>
+            }
+          </select>
+        </div>
         <button
           type="submit"
           class="flex items-center justify-center gap-2 rounded-xl bg-blue-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:bg-blue-700"
@@ -88,7 +100,7 @@
           </div>
           <span
             class="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-bold text-blue-600"
-            aria-label="{{ listedPets().length }} pets listed"
+            [attr.aria-label]="listedPets().length + ' pets listed'"
           >
             {{ listedPets().length }}
           </span>
@@ -105,6 +117,7 @@
               <app-pet-card
                 [pet]="pet"
                 [position]="i + 1"
+                [actionDisabled]="examiningFull()"
                 (action)="onMoveNext($event)"
                 (remove)="onRemove($event)"
               />
@@ -131,13 +144,22 @@
               Examining
             </h2>
           </div>
-          <span
-            class="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-600"
-            aria-label="{{ examiningPets().length }} pets being examined"
-          >
-            {{ examiningPets().length }}
-          </span>
+          <div class="flex items-center gap-1.5">
+            <span
+              class="rounded-full px-2.5 py-0.5 text-xs font-bold"
+              [class]="examiningFull() ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'"
+              [attr.aria-label]="examiningPets().length + ' of ' + maxExamining + ' examining slots used'"
+            >
+              {{ examiningPets().length }}/{{ maxExamining }}
+            </span>
+          </div>
         </div>
+
+        @if (examiningFull()) {
+          <div class="mx-4 mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600" role="status">
+            Examining is full — finish a pet before adding more.
+          </div>
+        }
 
         <ul
           class="flex flex-1 flex-col gap-3 p-4 min-h-52"
@@ -177,7 +199,7 @@
           </div>
           <span
             class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-600"
-            aria-label="{{ donePets().length }} pets returned to owner"
+            [attr.aria-label]="donePets().length + ' pets returned to owner'"
           >
             {{ donePets().length }}
           </span>
@@ -212,5 +234,33 @@
 
     </div>
   </section>
+
+  <!-- Undo Toast -->
+  @if (lastAction()) {
+    <div
+      class="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-3 rounded-xl bg-slate-800 px-5 py-3 text-sm text-white shadow-lg"
+      role="status"
+      aria-live="assertive"
+    >
+      <span>{{ lastAction()!.label }}</span>
+      <button
+        type="button"
+        class="rounded-lg bg-white/20 px-3 py-1 text-xs font-semibold transition-colors hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/50"
+        (click)="onUndo()"
+      >
+        Undo
+      </button>
+      <button
+        type="button"
+        class="p-1 text-white/60 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50 rounded"
+        aria-label="Dismiss"
+        (click)="onDismissUndo()"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" focusable="false">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+        </svg>
+      </button>
+    </div>
+  }
 
 </div>

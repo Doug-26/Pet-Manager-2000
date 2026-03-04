@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, OnDestroy } from '@angular/core';
-import { Pet } from '../../../models/pet.model';
+import { Pet, PET_SPECIES_OPTIONS } from '../../../models/pet.model';
 
 @Component({
   selector: 'app-pet-card',
@@ -17,6 +17,8 @@ import { Pet } from '../../../models/pet.model';
           {{ position() }}
         </span>
       }
+
+      <span class="text-lg" [attr.aria-label]="pet().species" role="img">{{ speciesIcon() }}</span>
 
       <div class="flex-1 min-w-0">
         <span class="block truncate font-medium text-slate-800">{{ pet().name }}</span>
@@ -54,8 +56,9 @@ import { Pet } from '../../../models/pet.model';
       } @else {
         <button
           type="button"
-          class="rounded-lg px-4 py-1.5 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1"
+          class="rounded-lg px-4 py-1.5 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-40"
           [class]="actionBtnClass()"
+          [disabled]="actionDisabled()"
           [attr.aria-label]="actionLabel()"
           (click)="action.emit(pet().id)"
         >
@@ -68,12 +71,17 @@ import { Pet } from '../../../models/pet.model';
 export class PetCardComponent implements OnDestroy {
   readonly pet = input.required<Pet>();
   readonly position = input<number | null>(null);
+  readonly actionDisabled = input(false);
 
   readonly action = output<string>();
   readonly remove = output<string>();
 
+  private readonly speciesMap = new Map(PET_SPECIES_OPTIONS.map((o) => [o.value, o.icon]));
+
   private readonly now = signal(Date.now());
   private readonly timerRef = setInterval(() => this.now.set(Date.now()), 30_000);
+
+  protected readonly speciesIcon = computed(() => this.speciesMap.get(this.pet().species) ?? '🐾');
 
   protected readonly waitTime = computed(() => {
     const diffMs = this.now() - this.pet().statusChangedAt;
@@ -105,6 +113,7 @@ export class PetCardComponent implements OnDestroy {
 
   protected readonly actionLabel = computed(() => {
     const name = this.pet().name;
+    if (this.actionDisabled()) return `Cannot move ${name} — examining is full`;
     return this.pet().status === 'listed'
       ? `Move ${name} to examining`
       : `Mark ${name} as done`;
