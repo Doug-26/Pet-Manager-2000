@@ -18,18 +18,18 @@ import { PetQueueService } from '../../services/pet-queue.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PetCardComponent],
   template: `
-    <div class="flex min-h-screen flex-col bg-linear-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div class="flex min-h-screen flex-col bg-linear-to-br from-slate-200 via-slate-100 to-slate-200">
       <!-- Branded header with gradient accent bar -->
-      <header class="border-b border-white/10 bg-white/5 backdrop-blur-md">
+      <header class="border-b border-slate-200 bg-white/80 backdrop-blur-md">
         <div class="mx-auto flex max-w-7xl items-center gap-4 px-8 py-5">
           <span class="text-5xl drop-shadow-lg" role="img" aria-label="Paw print"
                 style="filter: sepia(1) saturate(3) hue-rotate(340deg) brightness(0.9)">🐾</span>
           <div>
-            <h1 class="text-3xl font-extrabold tracking-tight text-white">Pet Manager 2000</h1>
-            <p class="text-sm font-medium tracking-wide text-slate-400">Queue Display</p>
+            <h1 class="text-3xl font-extrabold tracking-tight text-slate-800">Pet Manager 2000</h1>
+            <p class="text-sm font-medium tracking-wide text-slate-500">Queue Display</p>
           </div>
           <!-- <div class="ml-auto flex items-center gap-3">
-            <span class="rounded-full bg-white/10 px-4 py-1.5 text-base font-semibold text-white">
+            <span class="rounded-full bg-slate-200 px-4 py-1.5 text-base font-semibold text-slate-700">
               {{ totalCount() }} pet{{ totalCount() === 1 ? '' : 's' }} in queue
             </span>
           </div> -->
@@ -43,11 +43,11 @@ import { PetQueueService } from '../../services/pet-queue.service';
         <div class="grid flex-1 gap-6 lg:grid-cols-3">
 
           <!-- Listed Pets -->
-          <section class="flex flex-col rounded-2xl border border-blue-400/20 bg-blue-500/5 p-5 backdrop-blur-sm">
+          <section class="flex flex-col rounded-2xl border border-blue-200 bg-blue-50/60 p-5 shadow-sm">
             <div class="mb-5 flex items-center gap-3">
-              <span class="flex h-4 w-4 items-center justify-center rounded-full bg-blue-400 shadow-lg shadow-blue-400/30"></span>
-              <h2 class="text-xl font-bold text-blue-300">Listed Pets</h2>
-              <span class="ml-auto rounded-full bg-blue-400/20 px-3 py-0.5 text-base font-bold text-blue-300">
+              <span class="flex h-4 w-4 items-center justify-center rounded-full bg-blue-400 shadow-md shadow-blue-400/20"></span>
+              <h2 class="text-xl font-bold text-blue-700">Listed Pets</h2>
+              <span class="ml-auto rounded-full bg-blue-100 px-3 py-0.5 text-base font-bold text-blue-600">
                 {{ listedPets().length }}
               </span>
             </div>
@@ -63,14 +63,14 @@ import { PetQueueService } from '../../services/pet-queue.service';
           </section>
 
           <!-- Examining -->
-          <section class="flex flex-col rounded-2xl border border-amber-400/20 bg-amber-500/5 p-5 backdrop-blur-sm">
+          <section class="flex flex-col rounded-2xl border border-amber-200 bg-amber-50/60 p-5 shadow-sm">
             <div class="mb-5 flex items-center gap-3">
               <span class="relative flex h-4 w-4">
                 <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-50"></span>
-                <span class="relative inline-flex h-4 w-4 rounded-full bg-amber-400 shadow-lg shadow-amber-400/30"></span>
+                <span class="relative inline-flex h-4 w-4 rounded-full bg-amber-400 shadow-md shadow-amber-400/20"></span>
               </span>
-              <h2 class="text-xl font-bold text-amber-300">Examining</h2>
-              <span class="ml-auto rounded-full bg-amber-400/20 px-3 py-0.5 text-base font-bold text-amber-300">
+              <h2 class="text-xl font-bold text-amber-700">Examining</h2>
+              <span class="ml-auto rounded-full bg-amber-100 px-3 py-0.5 text-base font-bold text-amber-600">
                 {{ examiningPets().length }}/{{ maxExamining }}
               </span>
             </div>
@@ -86,11 +86,11 @@ import { PetQueueService } from '../../services/pet-queue.service';
           </section>
 
           <!-- Back to Hooman -->
-          <section class="flex flex-col rounded-2xl border border-emerald-400/20 bg-emerald-500/5 p-5 backdrop-blur-sm">
+          <section class="flex flex-col rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5 shadow-sm">
             <div class="mb-5 flex items-center gap-3">
-              <span class="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/30"></span>
-              <h2 class="text-xl font-bold text-emerald-300">Back to Hooman</h2>
-              <span class="ml-auto rounded-full bg-emerald-400/20 px-3 py-0.5 text-base font-bold text-emerald-300">
+              <span class="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-400 shadow-md shadow-emerald-400/20"></span>
+              <h2 class="text-xl font-bold text-emerald-700">Back to Hooman</h2>
+              <span class="ml-auto rounded-full bg-emerald-100 px-3 py-0.5 text-base font-bold text-emerald-600">
                 {{ donePets().length }}
               </span>
             </div>

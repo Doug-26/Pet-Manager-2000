@@ -13,7 +13,7 @@ import { Pet, PET_SPECIES_OPTIONS } from '../../../models/pet.model';
       @if (position()) {
         <span
           class="flex shrink-0 items-center justify-center rounded-full bg-blue-200 font-bold text-blue-700"
-          [class]="displayMode() ? 'h-8 w-8 text-sm bg-blue-400/30 text-blue-200' : 'h-6 w-6 text-xs'"
+          [class]="displayMode() ? 'h-8 w-8 text-sm bg-blue-100 text-blue-700' : 'h-6 w-6 text-xs'"
           aria-label="Queue position {{ position() }}"
         >
           {{ position() }}
@@ -23,8 +23,8 @@ import { Pet, PET_SPECIES_OPTIONS } from '../../../models/pet.model';
       <span class="text-lg" [class.text-2xl]="displayMode()" [attr.aria-label]="pet().species" role="img">{{ speciesIcon() }}</span>
 
       <div class="flex-1 min-w-0">
-        <span class="block truncate font-medium" [class]="displayMode() ? 'text-lg text-white' : 'text-slate-800'">{{ pet().name }}</span>
-        <div class="flex items-center gap-2 text-xs" [class]="displayMode() ? 'text-sm text-slate-300' : 'text-slate-400'">
+        <span class="block truncate font-medium" [class]="displayMode() ? 'text-lg text-slate-800' : 'text-slate-800'">{{ pet().name }}</span>
+        <div class="flex items-center gap-2 text-xs" [class]="displayMode() ? 'text-sm text-slate-500' : 'text-slate-400'">
           <span class="truncate">{{ pet().ownerName }}</span>
           @if (pet().status !== 'done') {
             <span aria-hidden="true">&middot;</span>
@@ -104,15 +104,15 @@ export class PetCardComponent implements OnDestroy {
   protected readonly cardClass = computed(() => {
     const big = this.displayMode();
     const base = big
-      ? 'flex items-center gap-4 rounded-2xl px-5 py-4 shadow-lg transition-colors'
+      ? 'flex items-center gap-4 rounded-2xl px-5 py-4 shadow-md transition-colors'
       : 'flex items-center gap-3 rounded-xl px-4 py-3 transition-colors';
     switch (this.pet().status) {
       case 'listed':
-        return `${base} ${big ? 'bg-white/10 border border-blue-400/20 text-white' : 'bg-blue-50'}`;
+        return `${base} ${big ? 'bg-white border border-blue-200' : 'bg-blue-50'}`;
       case 'examining':
-        return `${base} ${big ? 'bg-white/10 border border-amber-400/20 text-white' : 'bg-amber-50'}`;
+        return `${base} ${big ? 'bg-white border border-amber-200' : 'bg-amber-50'}`;
       case 'done':
-        return `${base} ${big ? 'bg-white/10 border border-emerald-400/20 text-white' : 'bg-emerald-50'}`;
+        return `${base} ${big ? 'bg-white border border-emerald-200' : 'bg-emerald-50'}`;
     }
   });
 
