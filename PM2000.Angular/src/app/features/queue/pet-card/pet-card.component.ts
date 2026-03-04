@@ -4,6 +4,7 @@ import { Pet, PET_SPECIES_OPTIONS } from '../../../models/pet.model';
 @Component({
   selector: 'app-pet-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'block' },
   template: `
     <div
       [class]="cardClass()"
@@ -11,18 +12,19 @@ import { Pet, PET_SPECIES_OPTIONS } from '../../../models/pet.model';
     >
       @if (position()) {
         <span
-          class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-200 text-xs font-bold text-blue-700"
+          class="flex shrink-0 items-center justify-center rounded-full bg-blue-200 font-bold text-blue-700"
+          [class]="displayMode() ? 'h-8 w-8 text-sm bg-blue-400/30 text-blue-200' : 'h-6 w-6 text-xs'"
           aria-label="Queue position {{ position() }}"
         >
           {{ position() }}
         </span>
       }
 
-      <span class="text-lg" [attr.aria-label]="pet().species" role="img">{{ speciesIcon() }}</span>
+      <span class="text-lg" [class.text-2xl]="displayMode()" [attr.aria-label]="pet().species" role="img">{{ speciesIcon() }}</span>
 
       <div class="flex-1 min-w-0">
-        <span class="block truncate font-medium text-slate-800">{{ pet().name }}</span>
-        <div class="flex items-center gap-2 text-xs text-slate-400">
+        <span class="block truncate font-medium" [class]="displayMode() ? 'text-lg text-white' : 'text-slate-800'">{{ pet().name }}</span>
+        <div class="flex items-center gap-2 text-xs" [class]="displayMode() ? 'text-sm text-slate-300' : 'text-slate-400'">
           <span class="truncate">{{ pet().ownerName }}</span>
           @if (pet().status !== 'done') {
             <span aria-hidden="true">&middot;</span>
@@ -31,39 +33,42 @@ import { Pet, PET_SPECIES_OPTIONS } from '../../../models/pet.model';
         </div>
       </div>
 
-      @if (pet().status === 'done') {
-        <button
-          type="button"
-          class="rounded-lg p-1.5 text-red-400 transition-colors hover:bg-red-100 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
-          [attr.aria-label]="'Dismiss ' + pet().name + ' from queue'"
-          (click)="remove.emit(pet().id)"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-            focusable="false"
+      <!-- In readonly mode (display window), hide all action buttons -->
+      @if (!readonly()) {
+        @if (pet().status === 'done') {
+          <button
+            type="button"
+            class="rounded-lg p-1.5 text-red-400 transition-colors hover:bg-red-100 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+            [attr.aria-label]="'Dismiss ' + pet().name + ' from queue'"
+            (click)="remove.emit(pet().id)"
           >
-            <path
-              fill-rule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
-      } @else {
-        <button
-          type="button"
-          class="rounded-lg px-4 py-1.5 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-40"
-          [class]="actionBtnClass()"
-          [disabled]="actionDisabled()"
-          [attr.aria-label]="actionLabel()"
-          (click)="action.emit(pet().id)"
-        >
-          {{ pet().status === 'listed' ? 'Next' : 'Done' }}
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="rounded-lg px-4 py-1.5 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-40"
+            [class]="actionBtnClass()"
+            [disabled]="actionDisabled()"
+            [attr.aria-label]="actionLabel()"
+            (click)="action.emit(pet().id)"
+          >
+            {{ pet().status === 'listed' ? 'Next' : 'Done' }}
+          </button>
+        }
       }
     </div>
   `,
@@ -72,6 +77,10 @@ export class PetCardComponent implements OnDestroy {
   readonly pet = input.required<Pet>();
   readonly position = input<number | null>(null);
   readonly actionDisabled = input(false);
+  /** When true, hides all action buttons (used in display-only mode for customers). */
+  readonly readonly = input(false);
+  /** When true, renders a larger card for customer-facing display screens. */
+  readonly displayMode = input(false);
 
   readonly action = output<string>();
   readonly remove = output<string>();
@@ -93,14 +102,17 @@ export class PetCardComponent implements OnDestroy {
   });
 
   protected readonly cardClass = computed(() => {
-    const base = 'flex items-center gap-3 rounded-xl px-4 py-3 transition-colors';
+    const big = this.displayMode();
+    const base = big
+      ? 'flex items-center gap-4 rounded-2xl px-5 py-4 shadow-lg transition-colors'
+      : 'flex items-center gap-3 rounded-xl px-4 py-3 transition-colors';
     switch (this.pet().status) {
       case 'listed':
-        return `${base} bg-blue-50`;
+        return `${base} ${big ? 'bg-white/10 border border-blue-400/20 text-white' : 'bg-blue-50'}`;
       case 'examining':
-        return `${base} bg-amber-50`;
+        return `${base} ${big ? 'bg-white/10 border border-amber-400/20 text-white' : 'bg-amber-50'}`;
       case 'done':
-        return `${base} bg-emerald-50`;
+        return `${base} ${big ? 'bg-white/10 border border-emerald-400/20 text-white' : 'bg-emerald-50'}`;
     }
   });
 

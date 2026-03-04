@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, effect, signal } from '@angular/core';
 import { Pet, PetSpecies, PetStatus } from '../models/pet.model';
 
 export interface UndoAction {
@@ -6,10 +6,39 @@ export interface UndoAction {
   snapshot: Pet[];
 }
 
+const STORAGE_KEY = 'pm2000_pets';
+
+function loadPets(): Pet[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class PetQueueService {
-  private readonly _pets = signal<Pet[]>([]);
+  private readonly _pets = signal<Pet[]>(loadPets());
   private readonly _lastAction = signal<UndoAction | null>(null);
+
+  constructor() {
+    // Persist pets to localStorage whenever the signal changes.
+    effect(() => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this._pets()));
+    });
+
+    // Sync from other tabs/windows — the 'storage' event only fires in
+    // *other* windows on the same origin, so the display window receives
+    // updates written by the staff window automatically.
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORAGE_KEY && e.newValue) {
+        try {
+          this._pets.set(JSON.parse(e.newValue));
+        } catch { /* ignore corrupt data */ }
+      }
+    });
+  }
 
   readonly MAX_EXAMINING = 3;
 
