@@ -1,14 +1,15 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CdkDragDrop, CdkDropList, CdkDrag, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { PetQueueService } from '../../services/pet-queue.service';
 import { PetCardComponent } from './pet-card/pet-card.component';
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 import { PET_SPECIES_OPTIONS, Pet, PetSpecies, PetStatus } from '../../models/pet.model';
 
 @Component({
   selector: 'app-queue-board',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, CdkDragPlaceholder, PetCardComponent],
+  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, CdkDragPlaceholder, PetCardComponent, ConfirmModalComponent],
   templateUrl: './queue-board.component.html',
 })
 export class QueueBoardComponent {
@@ -60,9 +61,12 @@ export class QueueBoardComponent {
   }
 
   onRemove(id: string): void {
-    if (confirm('Dismiss this pet from the queue?')) {
-      this.queueService.removePet(id);
-    }
+    this.pendingConfirm.set({
+      title: 'Dismiss Pet',
+      message: 'Remove this pet from the queue? You can undo this action.',
+      confirmText: 'Dismiss',
+      action: () => this.queueService.removePet(id),
+    });
   }
 
   onEdit(event: { id: string; name: string; ownerName: string; species: PetSpecies }): void {
@@ -78,6 +82,32 @@ export class QueueBoardComponent {
     if (movedToDone) {
       this.playNotification();
     }
+  }
+
+  onClearDone(): void {
+    this.pendingConfirm.set({
+      title: 'Clear Completed',
+      message: 'Remove all completed pets from the board? You can undo this action.',
+      confirmText: 'Clear All',
+      action: () => this.queueService.clearDone(),
+    });
+  }
+
+  // --- Confirm modal state ---
+  readonly pendingConfirm = signal<{
+    title: string;
+    message: string;
+    confirmText: string;
+    action: () => void;
+  } | null>(null);
+
+  onModalConfirm(): void {
+    this.pendingConfirm()?.action();
+    this.pendingConfirm.set(null);
+  }
+
+  onModalCancel(): void {
+    this.pendingConfirm.set(null);
   }
 
   onUndo(): void {

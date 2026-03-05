@@ -211,12 +211,24 @@
               Back to Hooman
             </h2>
           </div>
-          <span
-            class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-600"
-            [attr.aria-label]="donePets().length + ' pets returned to owner'"
-          >
-            {{ donePets().length }}
-          </span>
+          <div class="flex items-center gap-2">
+            @if (donePets().length > 0) {
+              <button
+                type="button"
+                class="cursor-pointer rounded-lg px-2 py-0.5 text-xs font-semibold text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+                aria-label="Clear all completed pets"
+                (click)="onClearDone()"
+              >
+                Clear All
+              </button>
+            }
+            <span
+              class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-600"
+              [attr.aria-label]="donePets().length + ' pets returned to owner'"
+            >
+              {{ donePets().length }}
+            </span>
+          </div>
         </div>
 
         <ul
@@ -282,6 +294,17 @@
         </svg>
       </button>
     </div>
+  }
+
+  <!-- Confirm Modal -->
+  @if (pendingConfirm(); as modal) {
+    <app-confirm-modal
+      [title]="modal.title"
+      [message]="modal.message"
+      [confirmText]="modal.confirmText"
+      (confirm)="onModalConfirm()"
+      (cancel)="onModalCancel()"
+    />
   }
 
 </div>

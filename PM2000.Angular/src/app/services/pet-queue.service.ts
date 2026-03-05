@@ -120,6 +120,13 @@ export class PetQueueService {
     );
   }
 
+  clearDone(): void {
+    const done = this.donePets();
+    if (!done.length) return;
+    this.saveSnapshot(`Cleared ${done.length} completed`);
+    this._pets.update((pets) => pets.filter((p) => p.status !== 'done'));
+  }
+
   undo(): void {
     const action = this._lastAction();
     if (!action) return;
