@@ -4,7 +4,7 @@ import { CdkDragDrop, CdkDropList, CdkDrag, CdkDragPlaceholder } from '@angular/
 import { PetQueueService } from '../../services/pet-queue.service';
 import { PetCardComponent } from './pet-card/pet-card.component';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
-import { PET_SPECIES_OPTIONS, Pet, PetSpecies, PetStatus } from '../../models/pet.model';
+import { PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, Pet, PetSpecies, PetStatus, VisitReason } from '../../models/pet.model';
 
 @Component({
   selector: 'app-queue-board',
@@ -16,6 +16,7 @@ export class QueueBoardComponent {
   private readonly queueService = inject(PetQueueService);
 
   readonly speciesOptions = PET_SPECIES_OPTIONS;
+  readonly visitReasonOptions = VISIT_REASON_OPTIONS;
 
   readonly petNameControl = new FormControl('', {
     nonNullable: true,
@@ -29,10 +30,16 @@ export class QueueBoardComponent {
 
   readonly speciesControl = new FormControl<PetSpecies>('dog', { nonNullable: true });
 
+  readonly visitReasonControl = new FormControl<VisitReason>('', { nonNullable: true });
+
+  readonly notesControl = new FormControl('', { nonNullable: true });
+
   readonly addPetForm = new FormGroup({
     petName: this.petNameControl,
     ownerName: this.ownerNameControl,
     species: this.speciesControl,
+    visitReason: this.visitReasonControl,
+    notes: this.notesControl,
   });
 
   readonly listedPets = this.queueService.listedPets;
@@ -49,6 +56,8 @@ export class QueueBoardComponent {
       this.petNameControl.value,
       this.ownerNameControl.value,
       this.speciesControl.value,
+      this.visitReasonControl.value,
+      this.notesControl.value,
     );
     this.addPetForm.reset();
   }
@@ -69,8 +78,8 @@ export class QueueBoardComponent {
     });
   }
 
-  onEdit(event: { id: string; name: string; ownerName: string; species: PetSpecies }): void {
-    this.queueService.editPet(event.id, event.name, event.ownerName, event.species);
+  onEdit(event: { id: string; name: string; ownerName: string; species: PetSpecies; visitReason: VisitReason; notes: string }): void {
+    this.queueService.editPet(event.id, event.name, event.ownerName, event.species, event.visitReason, event.notes);
   }
 
   onDrop(event: CdkDragDrop<string>): void {

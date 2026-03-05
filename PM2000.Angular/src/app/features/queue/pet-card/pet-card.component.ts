@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Pet, PET_SPECIES_OPTIONS, PetSpecies } from '../../../models/pet.model';
+import { Pet, PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, PetSpecies, VisitReason } from '../../../models/pet.model';
 
 @Component({
   selector: 'app-pet-card',
@@ -35,8 +35,8 @@ import { Pet, PET_SPECIES_OPTIONS, PetSpecies } from '../../../models/pet.model'
               />
             </div>
           </div>
-          <!-- Row 2: species select + save/cancel -->
-          <div class="flex items-end gap-2">
+          <!-- Row 2: species + visit reason selects -->
+          <div class="flex gap-2">
             <div>
               <label class="mb-0.5 block text-xs font-medium text-slate-500">Species</label>
               <select
@@ -47,6 +47,31 @@ import { Pet, PET_SPECIES_OPTIONS, PetSpecies } from '../../../models/pet.model'
                   <option [value]="opt.value">{{ opt.icon }} {{ opt.label }}</option>
                 }
               </select>
+            </div>
+            <div>
+              <label class="mb-0.5 block text-xs font-medium text-slate-500">Reason</label>
+              <select
+                class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                [(ngModel)]="editVisitReason"
+              >
+                @for (opt of visitReasonOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
+          <!-- Row 3: notes + save/cancel -->
+          <div class="flex items-end gap-2">
+            <div class="flex-1">
+              <label class="mb-0.5 block text-xs font-medium text-slate-500">Notes</label>
+              <input
+                type="text"
+                class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                [(ngModel)]="editNotes"
+                placeholder="Optional"
+                (keydown.enter)="saveEdit()"
+                (keydown.escape)="cancelEdit()"
+              />
             </div>
             <div class="ml-auto flex gap-1.5">
               <button
@@ -88,6 +113,12 @@ import { Pet, PET_SPECIES_OPTIONS, PetSpecies } from '../../../models/pet.model'
               <time [attr.datetime]="pet().statusChangedAt" aria-label="Waiting time">{{ waitTime() }}</time>
             }
           </div>
+          @if (reasonLabel()) {
+            <span class="mt-1 inline-block rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700" [class.text-sm]="displayMode()">{{ reasonLabel() }}</span>
+          }
+          @if (pet().notes) {
+            <p class="mt-0.5 truncate text-xs italic text-slate-400" [class.text-sm]="displayMode()">{{ pet().notes }}</p>
+          }
         </div>
 
         @if (!readonly()) {
@@ -141,9 +172,10 @@ export class PetCardComponent implements OnDestroy {
 
   readonly action = output<string>();
   readonly remove = output<string>();
-  readonly edit = output<{ id: string; name: string; ownerName: string; species: PetSpecies }>();
+  readonly edit = output<{ id: string; name: string; ownerName: string; species: PetSpecies; visitReason: VisitReason; notes: string }>();
 
   protected readonly speciesOptions = PET_SPECIES_OPTIONS;
+  protected readonly visitReasonOptions = VISIT_REASON_OPTIONS;
 
   private readonly speciesMap = new Map(PET_SPECIES_OPTIONS.map((o) => [o.value, o.icon]));
 
@@ -151,6 +183,9 @@ export class PetCardComponent implements OnDestroy {
   private readonly timerRef = setInterval(() => this.now.set(Date.now()), 30_000);
 
   protected readonly speciesIcon = computed(() => this.speciesMap.get(this.pet().species) ?? '🐾');
+
+  private readonly reasonMap = new Map(VISIT_REASON_OPTIONS.filter((o) => o.value).map((o) => [o.value, o.label]));
+  protected readonly reasonLabel = computed(() => this.reasonMap.get(this.pet().visitReason) ?? '');
 
   protected readonly waitTime = computed(() => {
     const diffMs = this.now() - this.pet().statusChangedAt;
@@ -196,12 +231,16 @@ export class PetCardComponent implements OnDestroy {
   protected editName = '';
   protected editOwner = '';
   protected editSpecies: PetSpecies = 'dog';
+  protected editVisitReason: VisitReason = '';
+  protected editNotes = '';
 
   protected startEdit(): void {
     const p = this.pet();
     this.editName = p.name;
     this.editOwner = p.ownerName;
     this.editSpecies = p.species;
+    this.editVisitReason = p.visitReason;
+    this.editNotes = p.notes;
     this.editing.set(true);
   }
 
@@ -212,6 +251,8 @@ export class PetCardComponent implements OnDestroy {
       name: this.editName.trim(),
       ownerName: this.editOwner.trim(),
       species: this.editSpecies,
+      visitReason: this.editVisitReason,
+      notes: this.editNotes.trim(),
     });
     this.editing.set(false);
   }

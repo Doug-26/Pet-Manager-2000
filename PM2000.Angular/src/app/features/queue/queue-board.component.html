@@ -7,80 +7,109 @@
         [formGroup]="addPetForm"
         (ngSubmit)="onAddPet()"
         novalidate
-        class="flex flex-col gap-3 sm:flex-row sm:items-start"
+        class="flex flex-col gap-3"
       >
-        <div class="flex-1">
-          <label for="pet-name-input" class="sr-only">Pet name</label>
-          <input
-            id="pet-name-input"
-            type="text"
-            [formControl]="petNameControl"
-            placeholder="Enter pet name"
-            autocomplete="off"
-            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 placeholder-slate-400 transition-all focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
-            [class.border-red-400]="petNameControl.invalid && petNameControl.touched"
-            [class.focus:ring-red-400/30]="petNameControl.invalid && petNameControl.touched"
-            [attr.aria-invalid]="petNameControl.invalid && petNameControl.touched ? true : null"
-            aria-describedby="pet-name-error"
-          />
-          @if (petNameControl.invalid && petNameControl.touched) {
-            <p id="pet-name-error" class="mt-1.5 text-sm text-red-500" role="alert">
-              Please enter a valid pet name.
-            </p>
-          }
-        </div>
-        <div class="flex-1">
-          <label for="owner-name-input" class="sr-only">Owner name</label>
-          <input
-            id="owner-name-input"
-            type="text"
-            [formControl]="ownerNameControl"
-            placeholder="Owner name"
-            autocomplete="off"
-            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 placeholder-slate-400 transition-all focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
-            [class.border-red-400]="ownerNameControl.invalid && ownerNameControl.touched"
-            [class.focus:ring-red-400/30]="ownerNameControl.invalid && ownerNameControl.touched"
-            [attr.aria-invalid]="ownerNameControl.invalid && ownerNameControl.touched ? true : null"
-            aria-describedby="owner-name-error"
-          />
-          @if (ownerNameControl.invalid && ownerNameControl.touched) {
-            <p id="owner-name-error" class="mt-1.5 text-sm text-red-500" role="alert">
-              Please enter the owner's name.
-            </p>
-          }
-        </div>
-        <div class="w-full sm:w-36">
-          <label for="species-select" class="sr-only">Pet species</label>
-          <select
-            id="species-select"
-            [formControl]="speciesControl"
-            class="cursor-pointer w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 transition-all focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
-          >
-            @for (opt of speciesOptions; track opt.value) {
-              <option [value]="opt.value">{{ opt.icon }} {{ opt.label }}</option>
-            }
-          </select>
-        </div>
-        <button
-          type="submit"
-          class="cursor-pointer flex items-center justify-center gap-2 rounded-xl bg-blue-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:bg-blue-700"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-4 w-4"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-              clip-rule="evenodd"
+        <!-- Row 1: Name, Owner, Species, Add button -->
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <div class="flex-1">
+            <label for="pet-name-input" class="sr-only">Pet name</label>
+            <input
+              id="pet-name-input"
+              type="text"
+              [formControl]="petNameControl"
+              placeholder="Enter pet name"
+              autocomplete="off"
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 placeholder-slate-400 transition-all focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
+              [class.border-red-400]="petNameControl.invalid && petNameControl.touched"
+              [class.focus:ring-red-400/30]="petNameControl.invalid && petNameControl.touched"
+              [attr.aria-invalid]="petNameControl.invalid && petNameControl.touched ? true : null"
+              aria-describedby="pet-name-error"
             />
-          </svg>
-          Add Pet
-        </button>
+            @if (petNameControl.invalid && petNameControl.touched) {
+              <p id="pet-name-error" class="mt-1.5 text-sm text-red-500" role="alert">
+                Please enter a valid pet name.
+              </p>
+            }
+          </div>
+          <div class="flex-1">
+            <label for="owner-name-input" class="sr-only">Owner name</label>
+            <input
+              id="owner-name-input"
+              type="text"
+              [formControl]="ownerNameControl"
+              placeholder="Owner name"
+              autocomplete="off"
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 placeholder-slate-400 transition-all focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
+              [class.border-red-400]="ownerNameControl.invalid && ownerNameControl.touched"
+              [class.focus:ring-red-400/30]="ownerNameControl.invalid && ownerNameControl.touched"
+              [attr.aria-invalid]="ownerNameControl.invalid && ownerNameControl.touched ? true : null"
+              aria-describedby="owner-name-error"
+            />
+            @if (ownerNameControl.invalid && ownerNameControl.touched) {
+              <p id="owner-name-error" class="mt-1.5 text-sm text-red-500" role="alert">
+                Please enter the owner's name.
+              </p>
+            }
+          </div>
+          <div class="w-full sm:w-36">
+            <label for="species-select" class="sr-only">Pet species</label>
+            <select
+              id="species-select"
+              [formControl]="speciesControl"
+              class="cursor-pointer w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 transition-all focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
+            >
+              @for (opt of speciesOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.icon }} {{ opt.label }}</option>
+              }
+            </select>
+          </div>
+          <button
+            type="submit"
+            class="cursor-pointer flex items-center justify-center gap-2 rounded-xl bg-blue-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:bg-blue-700"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Add Pet
+          </button>
+        </div>
+        <!-- Row 2: Visit reason + Notes -->
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <div class="w-full sm:w-44">
+            <label for="visit-reason-select" class="sr-only">Visit reason</label>
+            <select
+              id="visit-reason-select"
+              [formControl]="visitReasonControl"
+              class="cursor-pointer w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 transition-all focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
+            >
+              @for (opt of visitReasonOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+          </div>
+          <div class="flex-1">
+            <label for="notes-input" class="sr-only">Notes</label>
+            <input
+              id="notes-input"
+              type="text"
+              [formControl]="notesControl"
+              placeholder="Notes (optional)"
+              autocomplete="off"
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 placeholder-slate-400 transition-all focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
+            />
+          </div>
+        </div>
       </form>
     </div>
   </section>

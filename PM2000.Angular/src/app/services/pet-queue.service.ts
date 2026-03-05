@@ -1,5 +1,5 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
-import { Pet, PetSpecies, PetStatus } from '../models/pet.model';
+import { Pet, PetSpecies, PetStatus, VisitReason } from '../models/pet.model';
 
 export interface UndoAction {
   label: string;
@@ -49,7 +49,7 @@ export class PetQueueService {
   readonly examiningFull = computed(() => this.examiningPets().length >= this.MAX_EXAMINING);
   readonly lastAction = this._lastAction.asReadonly();
 
-  addPet(name: string, ownerName: string, species: PetSpecies): void {
+  addPet(name: string, ownerName: string, species: PetSpecies, visitReason: VisitReason, notes: string): void {
     const trimmedName = name.trim();
     const trimmedOwner = ownerName.trim();
     if (!trimmedName) return;
@@ -59,6 +59,8 @@ export class PetQueueService {
       name: trimmedName,
       ownerName: trimmedOwner,
       species,
+      visitReason,
+      notes: notes.trim(),
       status: 'listed',
       statusChangedAt: Date.now(),
     };
@@ -106,7 +108,7 @@ export class PetQueueService {
     return newStatus === 'done';
   }
 
-  editPet(id: string, name: string, ownerName: string, species: PetSpecies): void {
+  editPet(id: string, name: string, ownerName: string, species: PetSpecies, visitReason: VisitReason, notes: string): void {
     const trimmed = name.trim();
     const trimmedOwner = ownerName.trim();
     if (!trimmed || !trimmedOwner) return;
@@ -115,7 +117,7 @@ export class PetQueueService {
     this.saveSnapshot(`Edited ${pet.name}`);
     this._pets.update((pets) =>
       pets.map((p) =>
-        p.id === id ? { ...p, name: trimmed, ownerName: trimmedOwner, species } : p,
+        p.id === id ? { ...p, name: trimmed, ownerName: trimmedOwner, species, visitReason, notes: notes.trim() } : p,
       ),
     );
   }
