@@ -54,7 +54,7 @@
           <select
             id="species-select"
             [formControl]="speciesControl"
-            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 transition-all focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
+            class="cursor-pointer w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-800 transition-all focus:border-blue-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-400/30"
           >
             @for (opt of speciesOptions; track opt.value) {
               <option [value]="opt.value">{{ opt.icon }} {{ opt.label }}</option>
@@ -63,7 +63,7 @@
         </div>
         <button
           type="submit"
-          class="flex items-center justify-center gap-2 rounded-xl bg-blue-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:bg-blue-700"
+          class="cursor-pointer flex items-center justify-center gap-2 rounded-xl bg-blue-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:bg-blue-700"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -107,13 +107,18 @@
         </div>
 
         <ul
+          cdkDropList
+          #listedList="cdkDropList"
+          [cdkDropListData]="'listed'"
+          [cdkDropListConnectedTo]="[examiningList, doneList]"
+          (cdkDropListDropped)="onDrop($event)"
           class="flex flex-1 flex-col gap-3 p-4 min-h-52"
           role="list"
           aria-label="Listed pets waiting in queue"
           aria-live="polite"
         >
           @for (pet of listedPets(); track pet.id; let i = $index) {
-            <li>
+            <li cdkDrag [cdkDragData]="pet">
               <app-pet-card
                 [pet]="pet"
                 [position]="i + 1"
@@ -122,6 +127,7 @@
                 (remove)="onRemove($event)"
                 (edit)="onEdit($event)"
               />
+              <div class="rounded-xl border-2 border-dashed border-slate-300 bg-slate-100 px-4 py-3" *cdkDragPlaceholder></div>
             </li>
           } @empty {
             <li
@@ -163,19 +169,25 @@
         }
 
         <ul
+          cdkDropList
+          #examiningList="cdkDropList"
+          [cdkDropListData]="'examining'"
+          [cdkDropListConnectedTo]="[listedList, doneList]"
+          (cdkDropListDropped)="onDrop($event)"
           class="flex flex-1 flex-col gap-3 p-4 min-h-52"
           role="list"
           aria-label="Pets currently being examined"
           aria-live="polite"
         >
           @for (pet of examiningPets(); track pet.id) {
-            <li>
+            <li cdkDrag [cdkDragData]="pet">
               <app-pet-card
                 [pet]="pet"
                 (action)="onMoveNext($event)"
                 (remove)="onRemove($event)"
                 (edit)="onEdit($event)"
               />
+              <div class="rounded-xl border-2 border-dashed border-slate-300 bg-slate-100 px-4 py-3" *cdkDragPlaceholder></div>
             </li>
           } @empty {
             <li
@@ -208,19 +220,25 @@
         </div>
 
         <ul
+          cdkDropList
+          #doneList="cdkDropList"
+          [cdkDropListData]="'done'"
+          [cdkDropListConnectedTo]="[listedList, examiningList]"
+          (cdkDropListDropped)="onDrop($event)"
           class="flex flex-1 flex-col gap-3 p-4 min-h-52"
           role="list"
           aria-label="Pets returned to their owners"
           aria-live="polite"
         >
           @for (pet of donePets(); track pet.id) {
-            <li>
+            <li cdkDrag [cdkDragData]="pet">
               <app-pet-card
                 [pet]="pet"
                 (action)="onMoveNext($event)"
                 (remove)="onRemove($event)"
                 (edit)="onEdit($event)"
               />
+              <div class="rounded-xl border-2 border-dashed border-slate-300 bg-slate-100 px-4 py-3" *cdkDragPlaceholder></div>
             </li>
           } @empty {
             <li

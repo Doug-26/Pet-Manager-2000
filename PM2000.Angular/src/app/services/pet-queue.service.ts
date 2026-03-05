@@ -93,6 +93,19 @@ export class PetQueueService {
     this._pets.update((pets) => pets.filter((p) => p.id !== id));
   }
 
+  movePetToStatus(id: string, newStatus: PetStatus): boolean {
+    const pet = this._pets().find((p) => p.id === id);
+    if (!pet || pet.status === newStatus) return false;
+    if (newStatus === 'examining' && this.examiningFull()) return false;
+    this.saveSnapshot(`Moved ${pet.name}`);
+    this._pets.update((pets) =>
+      pets.map((p) =>
+        p.id === id ? { ...p, status: newStatus, statusChangedAt: Date.now() } : p,
+      ),
+    );
+    return newStatus === 'done';
+  }
+
   editPet(id: string, name: string, ownerName: string, species: PetSpecies): void {
     const trimmed = name.trim();
     const trimmedOwner = ownerName.trim();

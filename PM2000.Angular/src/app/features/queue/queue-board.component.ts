@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
+import { CdkDragDrop, CdkDropList, CdkDrag, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { PetQueueService } from '../../services/pet-queue.service';
 import { PetCardComponent } from './pet-card/pet-card.component';
-import { PET_SPECIES_OPTIONS, PetSpecies } from '../../models/pet.model';
+import { PET_SPECIES_OPTIONS, Pet, PetSpecies, PetStatus } from '../../models/pet.model';
 
 @Component({
   selector: 'app-queue-board',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, PetCardComponent],
+  imports: [ReactiveFormsModule, CdkDropList, CdkDrag, CdkDragPlaceholder, PetCardComponent],
   templateUrl: './queue-board.component.html',
 })
 export class QueueBoardComponent {
@@ -66,6 +67,17 @@ export class QueueBoardComponent {
 
   onEdit(event: { id: string; name: string; ownerName: string; species: PetSpecies }): void {
     this.queueService.editPet(event.id, event.name, event.ownerName, event.species);
+  }
+
+  onDrop(event: CdkDragDrop<string>): void {
+    // If dropped in the same column, do nothing (no reordering)
+    if (event.previousContainer === event.container) return;
+    const pet = event.item.data as Pet;
+    const targetStatus = event.container.data as PetStatus;
+    const movedToDone = this.queueService.movePetToStatus(pet.id, targetStatus);
+    if (movedToDone) {
+      this.playNotification();
+    }
   }
 
   onUndo(): void {
