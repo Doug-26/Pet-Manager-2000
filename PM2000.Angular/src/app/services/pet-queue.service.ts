@@ -93,6 +93,20 @@ export class PetQueueService {
     this._pets.update((pets) => pets.filter((p) => p.id !== id));
   }
 
+  editPet(id: string, name: string, ownerName: string, species: PetSpecies): void {
+    const trimmed = name.trim();
+    const trimmedOwner = ownerName.trim();
+    if (!trimmed || !trimmedOwner) return;
+    const pet = this._pets().find((p) => p.id === id);
+    if (!pet) return;
+    this.saveSnapshot(`Edited ${pet.name}`);
+    this._pets.update((pets) =>
+      pets.map((p) =>
+        p.id === id ? { ...p, name: trimmed, ownerName: trimmedOwner, species } : p,
+      ),
+    );
+  }
+
   undo(): void {
     const action = this._lastAction();
     if (!action) return;

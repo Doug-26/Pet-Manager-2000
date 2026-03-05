@@ -1,89 +1,149 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, OnDestroy } from '@angular/core';
-import { Pet, PET_SPECIES_OPTIONS } from '../../../models/pet.model';
+import { FormsModule } from '@angular/forms';
+import { Pet, PET_SPECIES_OPTIONS, PetSpecies } from '../../../models/pet.model';
 
 @Component({
   selector: 'app-pet-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
+  imports: [FormsModule],
   template: `
-    <div
-      [class]="cardClass()"
-      role="listitem"
-    >
-      @if (position()) {
-        <span
-          class="flex shrink-0 items-center justify-center rounded-full bg-blue-200 font-bold text-blue-700"
-          [class]="displayMode() ? 'h-8 w-8 text-sm bg-blue-100 text-blue-700' : 'h-6 w-6 text-xs'"
-          aria-label="Queue position {{ position() }}"
-        >
-          {{ position() }}
-        </span>
-      }
-
-      <span class="text-lg" [class.text-2xl]="displayMode()" [attr.aria-label]="pet().species" role="img">{{ speciesIcon() }}</span>
-
-      <div class="flex-1 min-w-0">
-        <span class="block truncate font-medium" [class]="displayMode() ? 'text-lg text-slate-800' : 'text-slate-800'">{{ pet().name }}</span>
-        <div class="flex items-center gap-2 text-xs" [class]="displayMode() ? 'text-sm text-slate-500' : 'text-slate-400'">
-          <span class="truncate">{{ pet().ownerName }}</span>
-          @if (pet().status !== 'done') {
-            <span aria-hidden="true">&middot;</span>
-            <time [attr.datetime]="pet().statusChangedAt" aria-label="Waiting time">{{ waitTime() }}</time>
-          }
+    @if (editing()) {
+      <!-- EDIT MODE: inline form replacing the entire card -->
+      <div [class]="cardClass()" role="listitem">
+        <div class="flex w-full flex-col gap-2.5">
+          <!-- Row 1: name + owner inputs side by side -->
+          <div class="flex gap-2">
+            <div class="flex-1">
+              <label class="mb-0.5 block text-xs font-medium text-slate-500">Pet Name</label>
+              <input
+                type="text"
+                class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                [(ngModel)]="editName"
+                (keydown.enter)="saveEdit()"
+                (keydown.escape)="cancelEdit()"
+              />
+            </div>
+            <div class="flex-1">
+              <label class="mb-0.5 block text-xs font-medium text-slate-500">Owner</label>
+              <input
+                type="text"
+                class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                [(ngModel)]="editOwner"
+                (keydown.enter)="saveEdit()"
+                (keydown.escape)="cancelEdit()"
+              />
+            </div>
+          </div>
+          <!-- Row 2: species select + save/cancel -->
+          <div class="flex items-end gap-2">
+            <div>
+              <label class="mb-0.5 block text-xs font-medium text-slate-500">Species</label>
+              <select
+                class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm text-slate-800 focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                [(ngModel)]="editSpecies"
+              >
+                @for (opt of speciesOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.icon }} {{ opt.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="ml-auto flex gap-1.5">
+              <button
+                type="button"
+                class="rounded-lg bg-blue-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 disabled:opacity-40"
+                [disabled]="!editName.trim() || !editOwner.trim()"
+                (click)="saveEdit()"
+              >Save</button>
+              <button
+                type="button"
+                class="rounded-lg bg-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1"
+                (click)="cancelEdit()"
+              >Cancel</button>
+            </div>
+          </div>
         </div>
       </div>
+    } @else {
+      <!-- NORMAL MODE -->
+      <div [class]="cardClass()" role="listitem">
+        @if (position()) {
+          <span
+            class="flex shrink-0 items-center justify-center rounded-full bg-blue-200 font-bold text-blue-700"
+            [class]="displayMode() ? 'h-8 w-8 text-sm bg-blue-100 text-blue-700' : 'h-6 w-6 text-xs'"
+            aria-label="Queue position {{ position() }}"
+          >
+            {{ position() }}
+          </span>
+        }
 
-      <!-- In readonly mode (display window), hide all action buttons -->
-      @if (!readonly()) {
-        @if (pet().status === 'done') {
+        <span class="text-lg" [class.text-2xl]="displayMode()" [attr.aria-label]="pet().species" role="img">{{ speciesIcon() }}</span>
+
+        <div class="flex-1 min-w-0">
+          <span class="block truncate font-medium" [class]="displayMode() ? 'text-lg text-slate-800' : 'text-slate-800'">{{ pet().name }}</span>
+          <div class="flex items-center gap-2 text-xs" [class]="displayMode() ? 'text-sm text-slate-500' : 'text-slate-400'">
+            <span class="truncate">{{ pet().ownerName }}</span>
+            @if (pet().status !== 'done') {
+              <span aria-hidden="true">&middot;</span>
+              <time [attr.datetime]="pet().statusChangedAt" aria-label="Waiting time">{{ waitTime() }}</time>
+            }
+          </div>
+        </div>
+
+        @if (!readonly()) {
+          <!-- Edit button -->
           <button
             type="button"
-            class="rounded-lg p-1.5 text-red-400 transition-colors hover:bg-red-100 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
-            [attr.aria-label]="'Dismiss ' + pet().name + ' from queue'"
-            (click)="remove.emit(pet().id)"
+            class="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1"
+            [attr.aria-label]="'Edit ' + pet().name"
+            (click)="startEdit()"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-              focusable="false"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clip-rule="evenodd"
-              />
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
             </svg>
           </button>
-        } @else {
-          <button
-            type="button"
-            class="rounded-lg px-4 py-1.5 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-40"
-            [class]="actionBtnClass()"
-            [disabled]="actionDisabled()"
-            [attr.aria-label]="actionLabel()"
-            (click)="action.emit(pet().id)"
-          >
-            {{ pet().status === 'listed' ? 'Next' : 'Done' }}
-          </button>
+
+          <!-- Action / Dismiss button -->
+          @if (pet().status === 'done') {
+            <button
+              type="button"
+              class="rounded-lg p-1.5 text-red-400 transition-colors hover:bg-red-100 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+              [attr.aria-label]="'Dismiss ' + pet().name + ' from queue'"
+              (click)="remove.emit(pet().id)"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" focusable="false">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="rounded-lg px-4 py-1.5 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-40"
+              [class]="actionBtnClass()"
+              [disabled]="actionDisabled()"
+              [attr.aria-label]="actionLabel()"
+              (click)="action.emit(pet().id)"
+            >
+              {{ pet().status === 'listed' ? 'Next' : 'Done' }}
+            </button>
+          }
         }
-      }
-    </div>
+      </div>
+    }
   `,
 })
 export class PetCardComponent implements OnDestroy {
   readonly pet = input.required<Pet>();
   readonly position = input<number | null>(null);
   readonly actionDisabled = input(false);
-  /** When true, hides all action buttons (used in display-only mode for customers). */
   readonly readonly = input(false);
-  /** When true, renders a larger card for customer-facing display screens. */
   readonly displayMode = input(false);
 
   readonly action = output<string>();
   readonly remove = output<string>();
+  readonly edit = output<{ id: string; name: string; ownerName: string; species: PetSpecies }>();
+
+  protected readonly speciesOptions = PET_SPECIES_OPTIONS;
 
   private readonly speciesMap = new Map(PET_SPECIES_OPTIONS.map((o) => [o.value, o.icon]));
 
@@ -104,8 +164,8 @@ export class PetCardComponent implements OnDestroy {
   protected readonly cardClass = computed(() => {
     const big = this.displayMode();
     const base = big
-      ? 'flex items-center gap-4 rounded-2xl px-5 py-4 shadow-md transition-colors'
-      : 'flex items-center gap-3 rounded-xl px-4 py-3 transition-colors';
+      ? 'flex items-center gap-4 rounded-2xl px-5 py-4 shadow-md transition-all'
+      : 'flex items-center gap-3 rounded-xl px-4 py-3 transition-all';
     switch (this.pet().status) {
       case 'listed':
         return `${base} ${big ? 'bg-white border border-blue-200' : 'bg-blue-50'}`;
@@ -130,6 +190,35 @@ export class PetCardComponent implements OnDestroy {
       ? `Move ${name} to examining`
       : `Mark ${name} as done`;
   });
+
+  // --- Edit mode ---
+  protected readonly editing = signal(false);
+  protected editName = '';
+  protected editOwner = '';
+  protected editSpecies: PetSpecies = 'dog';
+
+  protected startEdit(): void {
+    const p = this.pet();
+    this.editName = p.name;
+    this.editOwner = p.ownerName;
+    this.editSpecies = p.species;
+    this.editing.set(true);
+  }
+
+  protected saveEdit(): void {
+    if (!this.editName.trim() || !this.editOwner.trim()) return;
+    this.edit.emit({
+      id: this.pet().id,
+      name: this.editName.trim(),
+      ownerName: this.editOwner.trim(),
+      species: this.editSpecies,
+    });
+    this.editing.set(false);
+  }
+
+  protected cancelEdit(): void {
+    this.editing.set(false);
+  }
 
   ngOnDestroy(): void {
     clearInterval(this.timerRef);

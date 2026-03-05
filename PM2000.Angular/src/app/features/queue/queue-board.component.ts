@@ -64,6 +64,10 @@ export class QueueBoardComponent {
     }
   }
 
+  onEdit(event: { id: string; name: string; ownerName: string; species: PetSpecies }): void {
+    this.queueService.editPet(event.id, event.name, event.ownerName, event.species);
+  }
+
   onUndo(): void {
     this.queueService.undo();
   }
