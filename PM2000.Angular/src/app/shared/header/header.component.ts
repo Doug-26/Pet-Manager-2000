@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-header',
@@ -53,13 +54,17 @@ import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core
   `,
 })
 export class HeaderComponent {
+  private readonly doc = inject(DOCUMENT);
   readonly totalPets = input(0);
   readonly displayOpen = signal(false);
 
   private displayWindow: Window | null = null;
 
   openDisplay(): void {
-    this.displayWindow = window.open('/display', 'pm2000-display', 'width=1200,height=800');
+    // Use <base href> so the URL works on both localhost and GitHub Pages subpaths
+    const base = this.doc.querySelector('base')?.getAttribute('href') ?? '/';
+    const displayUrl = `${base}display`.replace('//', '/');
+    this.displayWindow = window.open(displayUrl, 'pm2000-display', 'width=1200,height=800');
     if (this.displayWindow) {
       this.displayOpen.set(true);
       // If the customer (or staff on the other screen) closes the window
