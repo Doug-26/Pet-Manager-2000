@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Pet, PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, PetSpecies, VisitReason } from '../../../models/pet.model';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-pet-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
-  imports: [FormsModule],
+  imports: [FormsModule, TitleCasePipe],
   template: `
     @if (editing()) {
       <!-- EDIT MODE: inline form replacing the entire card -->
@@ -105,19 +106,19 @@ import { Pet, PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, PetSpecies, VisitReason
         <span class="text-lg" [class.text-2xl]="displayMode()" [attr.aria-label]="pet().species" role="img">{{ speciesIcon() }}</span>
 
         <div class="flex-1 min-w-0">
-          <span class="block truncate font-medium" [class]="displayMode() ? 'text-lg text-slate-800' : 'text-slate-800'">{{ pet().name }}</span>
+          <span class="block truncate font-medium" [class]="displayMode() ? 'text-lg text-slate-800' : 'text-slate-800'">{{ pet().name | titlecase }}</span>
           <div class="flex items-center gap-2 text-xs" [class]="displayMode() ? 'text-sm text-slate-500' : 'text-slate-400'">
-            <span class="truncate">{{ pet().ownerName }}</span>
+            <span class="truncate">{{ pet().ownerName | titlecase }} </span>
             @if (pet().status !== 'done') {
               <span aria-hidden="true">&middot;</span>
               <time [attr.datetime]="pet().statusChangedAt" aria-label="Waiting time">{{ waitTime() }}</time>
             }
           </div>
           @if (reasonLabel()) {
-            <span class="mt-1 inline-block rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700" [class.text-sm]="displayMode()">{{ reasonLabel() }}</span>
+            <span class="mt-1 inline-block rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700" [class.text-sm]="displayMode()">{{ reasonLabel() | titlecase }}</span>
           }
           @if (pet().notes) {
-            <p class="mt-0.5 truncate text-xs italic text-slate-400" [class.text-sm]="displayMode()">{{ pet().notes }}</p>
+            <p class="mt-0.5 truncate text-xs italic text-slate-400" [class.text-sm]="displayMode()">{{ pet().notes | titlecase }}</p>
           }
         </div>
 

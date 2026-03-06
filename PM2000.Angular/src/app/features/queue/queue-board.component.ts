@@ -57,6 +57,7 @@ export class QueueBoardComponent {
   readonly examiningFull = this.queueService.examiningFull;
   readonly maxExamining = this.queueService.MAX_EXAMINING;
   readonly lastAction = this.queueService.lastAction;
+  readonly toastPaused = signal(false);
 
   onAddPet(): void {
     this.addPetForm.markAllAsTouched();
@@ -129,10 +130,12 @@ export class QueueBoardComponent {
   }
 
   onUndo(): void {
+    this.toastPaused.set(false);
     this.queueService.undo();
   }
 
   onDismissUndo(): void {
+    this.toastPaused.set(false);
     this.queueService.dismissUndo();
   }
 
