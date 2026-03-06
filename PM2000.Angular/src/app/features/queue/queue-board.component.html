@@ -160,10 +160,11 @@
             </li>
           } @empty {
             <li
+              @emptyState
               class="flex flex-1 flex-col items-center justify-center text-slate-400 py-8"
               aria-label="No pets listed"
             >
-              <span class="mb-2 text-4xl" aria-hidden="true">🐶</span>
+              <span class="mb-2 text-4xl empty-float" aria-hidden="true">🐶</span>
               <p class="text-sm font-medium">No pets in queue</p>
               <p class="mt-1 text-xs text-slate-300">Add a pet above to get started</p>
             </li>
@@ -220,10 +221,11 @@
             </li>
           } @empty {
             <li
+              @emptyState
               class="flex flex-1 flex-col items-center justify-center text-slate-400 py-8"
               aria-label="No pets being examined"
             >
-              <span class="mb-2 text-4xl" aria-hidden="true">🔍</span>
+              <span class="mb-2 text-4xl empty-float" aria-hidden="true">🔍</span>
               <p class="text-sm font-medium">No examination in progress</p>
               <p class="mt-1 text-xs text-slate-300">Move a pet from the queue</p>
             </li>
@@ -283,10 +285,11 @@
             </li>
           } @empty {
             <li
+              @emptyState
               class="flex flex-1 flex-col items-center justify-center text-slate-400 py-8"
               aria-label="No pets returned yet"
             >
-              <span class="mb-2 text-4xl" aria-hidden="true">🏠</span>
+              <span class="mb-2 text-4xl empty-float" aria-hidden="true">🏠</span>
               <p class="text-sm font-medium">No pets returned yet</p>
               <p class="mt-1 text-xs text-slate-300">Complete an examination to see pets here</p>
             </li>

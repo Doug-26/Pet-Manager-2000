@@ -34,4 +34,14 @@
   transition: outline 150ms ease, background-color 150ms ease;
 }
 
+/* Empty state floating emoji */
+@keyframes empty-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.empty-float {
+  animation: empty-float 3s ease-in-out infinite;
+}
+
 

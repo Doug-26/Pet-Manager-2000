@@ -20,6 +20,12 @@ import { PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, Pet, PetSpecies, PetStatus, 
         animate('250ms ease-out', style({ opacity: 1, transform: 'translateY(0) scale(1)' })),
       ]),
     ]),
+    trigger('emptyState', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.9)' }),
+        animate('400ms 150ms ease-out', style({ opacity: 1, transform: 'scale(1)' })),
+      ]),
+    ]),
   ],
 })
 export class QueueBoardComponent {

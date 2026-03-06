@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Pet, PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, PetSpecies, VisitReason } from '../../../models/pet.model';
-import { TitleCasePipe } from '@angular/common';
+import { TitleCasePipe, UpperCasePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-pet-card',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'block' },
-  imports: [FormsModule, TitleCasePipe],
-  template: `
+    selector: 'app-pet-card',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    host: { class: 'block' },
+    imports: [FormsModule, TitleCasePipe, UpperCasePipe],
+    template: `
     @if (editing()) {
       <!-- EDIT MODE: inline form replacing the entire card -->
       <div [class]="cardClass()" role="listitem">
@@ -106,9 +106,22 @@ import { TitleCasePipe } from '@angular/common';
         <span class="text-lg" [class.text-2xl]="displayMode()" [attr.aria-label]="pet().species" role="img">{{ speciesIcon() }}</span>
 
         <div class="flex-1 min-w-0">
-          <span class="block truncate font-medium" [class]="displayMode() ? 'text-lg text-slate-800' : 'text-slate-800'">{{ pet().name | titlecase }}</span>
+          <span class="block truncate font-medium" [class]="displayMode() ? 'text-lg text-slate-800' : 'text-slate-800'">
+          @if (pet().name.length === 2) {
+                {{ pet().name | uppercase }}
+          }  @else {
+                {{ pet().name | titlecase }}
+          }
+        </span>
           <div class="flex items-center gap-2 text-xs" [class]="displayMode() ? 'text-sm text-slate-500' : 'text-slate-400'">
-            <span class="truncate">{{ pet().ownerName | titlecase }} </span>
+            <!-- Check if the owner name it 2 letters or not -->
+            <span class="truncate">
+                @if (pet().ownerName.length === 2) {
+                    {{ pet().ownerName | uppercase }}
+                }  @else {
+                    {{ pet().ownerName | titlecase }}
+                } 
+            </span>             
             @if (pet().status !== 'done') {
               <span aria-hidden="true">&middot;</span>
               <time [attr.datetime]="pet().statusChangedAt" aria-label="Waiting time">{{ waitTime() }}</time>
@@ -165,104 +178,104 @@ import { TitleCasePipe } from '@angular/common';
   `,
 })
 export class PetCardComponent implements OnDestroy {
-  readonly pet = input.required<Pet>();
-  readonly position = input<number | null>(null);
-  readonly actionDisabled = input(false);
-  readonly readonly = input(false);
-  readonly displayMode = input(false);
+    readonly pet = input.required<Pet>();
+    readonly position = input<number | null>(null);
+    readonly actionDisabled = input(false);
+    readonly readonly = input(false);
+    readonly displayMode = input(false);
 
-  readonly action = output<string>();
-  readonly remove = output<string>();
-  readonly edit = output<{ id: string; name: string; ownerName: string; species: PetSpecies; visitReason: VisitReason; notes: string }>();
+    readonly action = output<string>();
+    readonly remove = output<string>();
+    readonly edit = output<{ id: string; name: string; ownerName: string; species: PetSpecies; visitReason: VisitReason; notes: string }>();
 
-  protected readonly speciesOptions = PET_SPECIES_OPTIONS;
-  protected readonly visitReasonOptions = VISIT_REASON_OPTIONS;
+    protected readonly speciesOptions = PET_SPECIES_OPTIONS;
+    protected readonly visitReasonOptions = VISIT_REASON_OPTIONS;
 
-  private readonly speciesMap = new Map(PET_SPECIES_OPTIONS.map((o) => [o.value, o.icon]));
+    private readonly speciesMap = new Map(PET_SPECIES_OPTIONS.map((o) => [o.value, o.icon]));
 
-  private readonly now = signal(Date.now());
-  private readonly timerRef = setInterval(() => this.now.set(Date.now()), 30_000);
+    private readonly now = signal(Date.now());
+    private readonly timerRef = setInterval(() => this.now.set(Date.now()), 30_000);
 
-  protected readonly speciesIcon = computed(() => this.speciesMap.get(this.pet().species) ?? '🐾');
+    protected readonly speciesIcon = computed(() => this.speciesMap.get(this.pet().species) ?? '🐾');
 
-  private readonly reasonMap = new Map(VISIT_REASON_OPTIONS.filter((o) => o.value).map((o) => [o.value, o.label]));
-  protected readonly reasonLabel = computed(() => this.reasonMap.get(this.pet().visitReason) ?? '');
+    private readonly reasonMap = new Map(VISIT_REASON_OPTIONS.filter((o) => o.value).map((o) => [o.value, o.label]));
+    protected readonly reasonLabel = computed(() => this.reasonMap.get(this.pet().visitReason) ?? '');
 
-  protected readonly waitTime = computed(() => {
-    const diffMs = this.now() - this.pet().statusChangedAt;
-    const minutes = Math.floor(diffMs / 60_000);
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    return `${hours}h ${minutes % 60}m ago`;
-  });
-
-  protected readonly cardClass = computed(() => {
-    const big = this.displayMode();
-    const base = big
-      ? 'flex items-center gap-4 rounded-2xl px-5 py-4 shadow-md transition-all'
-      : 'flex items-center gap-3 rounded-xl px-4 py-3 transition-all cursor-pointer hover:shadow-md hover:-translate-y-0.5';
-    switch (this.pet().status) {
-      case 'listed':
-        return `${base} ${big ? 'bg-white border border-blue-200' : 'bg-blue-50'}`;
-      case 'examining':
-        return `${base} ${big ? 'bg-white border border-amber-200' : 'bg-amber-50'}`;
-      case 'done':
-        return `${base} ${big ? 'bg-white border border-emerald-200' : 'bg-emerald-50'}`;
-    }
-  });
-
-  protected readonly actionBtnClass = computed(() => {
-    if (this.pet().status === 'listed') {
-      return 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-400';
-    }
-    return 'bg-amber-500 hover:bg-amber-600 focus:ring-amber-400';
-  });
-
-  protected readonly actionLabel = computed(() => {
-    const name = this.pet().name;
-    if (this.actionDisabled()) return `Cannot move ${name} — examining is full`;
-    return this.pet().status === 'listed'
-      ? `Move ${name} to examining`
-      : `Mark ${name} as done`;
-  });
-
-  // --- Edit mode ---
-  protected readonly editing = signal(false);
-  protected editName = '';
-  protected editOwner = '';
-  protected editSpecies: PetSpecies = 'dog';
-  protected editVisitReason: VisitReason = '';
-  protected editNotes = '';
-
-  protected startEdit(): void {
-    const p = this.pet();
-    this.editName = p.name;
-    this.editOwner = p.ownerName;
-    this.editSpecies = p.species;
-    this.editVisitReason = p.visitReason;
-    this.editNotes = p.notes;
-    this.editing.set(true);
-  }
-
-  protected saveEdit(): void {
-    if (!this.editName.trim() || !this.editOwner.trim()) return;
-    this.edit.emit({
-      id: this.pet().id,
-      name: this.editName.trim(),
-      ownerName: this.editOwner.trim(),
-      species: this.editSpecies,
-      visitReason: this.editVisitReason,
-      notes: this.editNotes.trim(),
+    protected readonly waitTime = computed(() => {
+        const diffMs = this.now() - this.pet().statusChangedAt;
+        const minutes = Math.floor(diffMs / 60_000);
+        if (minutes < 1) return 'Just now';
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.floor(minutes / 60);
+        return `${hours}h ${minutes % 60}m ago`;
     });
-    this.editing.set(false);
-  }
 
-  protected cancelEdit(): void {
-    this.editing.set(false);
-  }
+    protected readonly cardClass = computed(() => {
+        const big = this.displayMode();
+        const base = big
+            ? 'flex items-center gap-4 rounded-2xl px-5 py-4 shadow-md transition-all'
+            : 'flex items-center gap-3 rounded-xl px-4 py-3 transition-all cursor-pointer hover:shadow-md hover:-translate-y-0.5';
+        switch (this.pet().status) {
+            case 'listed':
+                return `${base} ${big ? 'bg-white border border-blue-200' : 'bg-blue-50'}`;
+            case 'examining':
+                return `${base} ${big ? 'bg-white border border-amber-200' : 'bg-amber-50'}`;
+            case 'done':
+                return `${base} ${big ? 'bg-white border border-emerald-200' : 'bg-emerald-50'}`;
+        }
+    });
 
-  ngOnDestroy(): void {
-    clearInterval(this.timerRef);
-  }
+    protected readonly actionBtnClass = computed(() => {
+        if (this.pet().status === 'listed') {
+            return 'bg-blue-500 hover:bg-blue-600 focus:ring-blue-400';
+        }
+        return 'bg-amber-500 hover:bg-amber-600 focus:ring-amber-400';
+    });
+
+    protected readonly actionLabel = computed(() => {
+        const name = this.pet().name;
+        if (this.actionDisabled()) return `Cannot move ${name} — examining is full`;
+        return this.pet().status === 'listed'
+            ? `Move ${name} to examining`
+            : `Mark ${name} as done`;
+    });
+
+    // --- Edit mode ---
+    protected readonly editing = signal(false);
+    protected editName = '';
+    protected editOwner = '';
+    protected editSpecies: PetSpecies = 'dog';
+    protected editVisitReason: VisitReason = '';
+    protected editNotes = '';
+
+    protected startEdit(): void {
+        const p = this.pet();
+        this.editName = p.name;
+        this.editOwner = p.ownerName;
+        this.editSpecies = p.species;
+        this.editVisitReason = p.visitReason;
+        this.editNotes = p.notes;
+        this.editing.set(true);
+    }
+
+    protected saveEdit(): void {
+        if (!this.editName.trim() || !this.editOwner.trim()) return;
+        this.edit.emit({
+            id: this.pet().id,
+            name: this.editName.trim(),
+            ownerName: this.editOwner.trim(),
+            species: this.editSpecies,
+            visitReason: this.editVisitReason,
+            notes: this.editNotes.trim(),
+        });
+        this.editing.set(false);
+    }
+
+    protected cancelEdit(): void {
+        this.editing.set(false);
+    }
+
+    ngOnDestroy(): void {
+        clearInterval(this.timerRef);
+    }
 }
