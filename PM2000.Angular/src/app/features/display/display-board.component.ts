@@ -43,15 +43,15 @@ import { PetQueueService } from '../../services/pet-queue.service';
         <div class="grid flex-1 gap-6 lg:grid-cols-3">
 
           <!-- Listed Pets -->
-          <section class="flex flex-col rounded-2xl border border-blue-200 bg-blue-50/60 p-5 shadow-sm">
-            <div class="mb-5 flex items-center gap-3">
+          <section class="flex flex-col rounded-2xl border border-blue-200 bg-blue-50/60 shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 p-5 pb-0 mb-5">
               <span class="flex h-4 w-4 items-center justify-center rounded-full bg-blue-400 shadow-md shadow-blue-400/20"></span>
               <h2 class="text-xl font-bold text-blue-700">Listed Pets</h2>
               <span class="ml-auto rounded-full bg-blue-100 px-3 py-0.5 text-base font-bold text-blue-600">
                 {{ listedPets().length }}
               </span>
             </div>
-            <div class="flex-1 space-y-4 overflow-y-auto" role="list">
+            <div class="flex-1 space-y-4 overflow-y-auto px-5 pb-5 max-h-[calc(100vh-16rem)]" role="list">
               @for (pet of listedPets(); track pet.id; let i = $index) {
                 <app-pet-card [pet]="pet" [position]="i + 1" [readonly]="true" [displayMode]="true" />
               } @empty {
@@ -63,8 +63,8 @@ import { PetQueueService } from '../../services/pet-queue.service';
           </section>
 
           <!-- Examining -->
-          <section class="flex flex-col rounded-2xl border border-amber-200 bg-amber-50/60 p-5 shadow-sm">
-            <div class="mb-5 flex items-center gap-3">
+          <section class="flex flex-col rounded-2xl border border-amber-200 bg-amber-50/60 shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 p-5 pb-0 mb-5">
               <span class="relative flex h-4 w-4">
                 <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-50"></span>
                 <span class="relative inline-flex h-4 w-4 rounded-full bg-amber-400 shadow-md shadow-amber-400/20"></span>
@@ -74,7 +74,7 @@ import { PetQueueService } from '../../services/pet-queue.service';
                 {{ examiningPets().length }}/{{ maxExamining }}
               </span>
             </div>
-            <div class="flex-1 space-y-4 overflow-y-auto" role="list">
+            <div class="flex-1 space-y-4 overflow-y-auto px-5 pb-5 max-h-[calc(100vh-16rem)]" role="list">
               @for (pet of examiningPets(); track pet.id) {
                 <app-pet-card [pet]="pet" [readonly]="true" [displayMode]="true" />
               } @empty {
@@ -86,15 +86,15 @@ import { PetQueueService } from '../../services/pet-queue.service';
           </section>
 
           <!-- Back to Hooman -->
-          <section class="flex flex-col rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5 shadow-sm">
-            <div class="mb-5 flex items-center gap-3">
+          <section class="flex flex-col rounded-2xl border border-emerald-200 bg-emerald-50/60 shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 p-5 pb-0 mb-5">
               <span class="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-400 shadow-md shadow-emerald-400/20"></span>
               <h2 class="text-xl font-bold text-emerald-700">Back to Hooman</h2>
               <span class="ml-auto rounded-full bg-emerald-100 px-3 py-0.5 text-base font-bold text-emerald-600">
                 {{ donePets().length }}
               </span>
             </div>
-            <div class="flex-1 space-y-4 overflow-y-auto" role="list">
+            <div class="flex-1 space-y-4 overflow-y-auto px-5 pb-5 max-h-[calc(100vh-16rem)]" role="list">
               @for (pet of donePets(); track pet.id) {
                 <app-pet-card [pet]="pet" [readonly]="true" [displayMode]="true" />
               } @empty {

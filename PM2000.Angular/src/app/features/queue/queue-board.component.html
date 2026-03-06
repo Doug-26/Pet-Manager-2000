@@ -1,8 +1,8 @@
 <div class="space-y-8">
-  <!-- Add Pet Section -->
-  <section aria-labelledby="add-pet-heading">
+  <!-- Add Pet Section (sticky) -->
+  <section aria-labelledby="add-pet-heading" class="sticky top-[4.5rem] z-10">
     <h2 id="add-pet-heading" class="sr-only">Add a pet to the queue</h2>
-    <div class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-100">
+    <div class="rounded-2xl bg-white/95 p-5 shadow-sm ring-1 ring-slate-100 backdrop-blur-sm">
       <form
         [formGroup]="addPetForm"
         (ngSubmit)="onAddPet()"

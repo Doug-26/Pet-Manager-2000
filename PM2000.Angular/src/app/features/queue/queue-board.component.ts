@@ -12,6 +12,7 @@ import { PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, Pet, PetSpecies, PetStatus, 
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, CdkDropList, CdkDrag, CdkDragPlaceholder, PetCardComponent, ConfirmModalComponent],
   templateUrl: './queue-board.component.html',
+  host: { class: 'block' },
   animations: [
     trigger('cardEnter', [
       transition(':enter', [

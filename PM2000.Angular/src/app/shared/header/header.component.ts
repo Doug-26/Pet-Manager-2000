@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core
   selector: 'app-header',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <header class="bg-white/80 shadow-sm backdrop-blur-sm">
+    <header class="sticky top-0 z-20 bg-white/80 shadow-sm backdrop-blur-sm">
       <div class="mx-auto flex max-w-7xl items-center gap-3 px-6 py-4">
         <span class="text-3xl" role="img" aria-label="Paw print" style="filter: sepia(1) saturate(3) hue-rotate(340deg) brightness(0.75)">🐾</span>
         <div>
