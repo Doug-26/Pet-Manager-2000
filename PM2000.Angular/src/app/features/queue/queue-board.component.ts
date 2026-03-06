@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CdkDragDrop, CdkDropList, CdkDrag, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { PetQueueService } from '../../services/pet-queue.service';
@@ -11,6 +12,14 @@ import { PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, Pet, PetSpecies, PetStatus, 
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, CdkDropList, CdkDrag, CdkDragPlaceholder, PetCardComponent, ConfirmModalComponent],
   templateUrl: './queue-board.component.html',
+  animations: [
+    trigger('cardEnter', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-8px) scale(0.98)' }),
+        animate('250ms ease-out', style({ opacity: 1, transform: 'translateY(0) scale(1)' })),
+      ]),
+    ]),
+  ],
 })
 export class QueueBoardComponent {
   private readonly queueService = inject(PetQueueService);

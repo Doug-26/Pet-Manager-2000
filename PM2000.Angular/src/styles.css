@@ -18,3 +18,14 @@
 .cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
   transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
 }
+
+/* Highlight valid drop zones when dragging */
+.cdk-drop-list-receiving {
+  outline: 2px dashed rgb(147 197 253); /* blue-300 */
+  outline-offset: -2px;
+  background-color: rgb(239 246 255 / 0.6); /* blue-50/60 */
+  border-radius: 1rem;
+  transition: outline 150ms ease, background-color 150ms ease;
+}
+
+

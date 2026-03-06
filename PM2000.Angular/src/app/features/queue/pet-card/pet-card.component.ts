@@ -76,13 +76,13 @@ import { Pet, PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, PetSpecies, VisitReason
             <div class="ml-auto flex gap-1.5">
               <button
                 type="button"
-                class="cursor-pointer rounded-lg bg-blue-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 disabled:opacity-40"
+                class="cursor-pointer rounded-lg bg-blue-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 disabled:opacity-40 active:scale-95"
                 [disabled]="!editName.trim() || !editOwner.trim()"
                 (click)="saveEdit()"
               >Save</button>
               <button
                 type="button"
-                class="cursor-pointer rounded-lg bg-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1"
+                class="cursor-pointer rounded-lg bg-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1 active:scale-95"
                 (click)="cancelEdit()"
               >Cancel</button>
             </div>
@@ -125,7 +125,7 @@ import { Pet, PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, PetSpecies, VisitReason
           <!-- Edit button -->
           <button
             type="button"
-            class="cursor-pointer rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1"
+            class="cursor-pointer rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1 active:scale-95"
             [attr.aria-label]="'Edit ' + pet().name"
             (click)="startEdit()"
           >
@@ -138,7 +138,7 @@ import { Pet, PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, PetSpecies, VisitReason
           @if (pet().status === 'done') {
             <button
               type="button"
-              class="cursor-pointer rounded-lg p-1.5 text-red-400 transition-colors hover:bg-red-100 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+              class="cursor-pointer rounded-lg p-1.5 text-red-400 transition-colors hover:bg-red-100 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 active:scale-95"
               [attr.aria-label]="'Dismiss ' + pet().name + ' from queue'"
               (click)="remove.emit(pet().id)"
             >
@@ -149,7 +149,7 @@ import { Pet, PET_SPECIES_OPTIONS, VISIT_REASON_OPTIONS, PetSpecies, VisitReason
           } @else {
             <button
               type="button"
-              class="cursor-pointer rounded-lg px-4 py-1.5 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-40"
+              class="cursor-pointer rounded-lg px-4 py-1.5 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-40 active:scale-95"
               [class]="actionBtnClass()"
               [disabled]="actionDisabled()"
               [attr.aria-label]="actionLabel()"
@@ -200,7 +200,7 @@ export class PetCardComponent implements OnDestroy {
     const big = this.displayMode();
     const base = big
       ? 'flex items-center gap-4 rounded-2xl px-5 py-4 shadow-md transition-all'
-      : 'flex items-center gap-3 rounded-xl px-4 py-3 transition-all cursor-pointer';
+      : 'flex items-center gap-3 rounded-xl px-4 py-3 transition-all cursor-pointer hover:shadow-md hover:-translate-y-0.5';
     switch (this.pet().status) {
       case 'listed':
         return `${base} ${big ? 'bg-white border border-blue-200' : 'bg-blue-50'}`;

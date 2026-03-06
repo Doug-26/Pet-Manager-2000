@@ -24,7 +24,7 @@ import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core
           @if (displayOpen()) {
             <button
               type="button"
-              class="cursor-pointer flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+              class="cursor-pointer flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1 active:scale-95"
               aria-label="Close the customer display window"
               (click)="closeDisplay()"
             >
@@ -36,7 +36,7 @@ import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core
           } @else {
             <button
               type="button"
-              class="cursor-pointer flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1"
+              class="cursor-pointer flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1 active:scale-95"
               aria-label="Open queue display in a new window for customers"
               (click)="openDisplay()"
             >
